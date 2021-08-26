@@ -16,15 +16,16 @@
 // limitations under the License.
 
 //! Test mock for unit tests and benchmarking
-use crate::{EnsureAddressNever, EnsureAddressRoot, FeeCalculator, IdentityAddressMapping};
-use frame_support::{parameter_types, traits::FindAuthor, ConsensusEngineId};
+use frame_support::{ConsensusEngineId, parameter_types, traits::FindAuthor};
 use sp_core::{H160, H256, U256};
 use sp_runtime::{
-	generic,
-	traits::{BlakeTwo256, IdentityLookup},
+    generic,
+    traits::{BlakeTwo256, IdentityLookup},
 };
-use sp_std::prelude::*;
 use sp_std::{boxed::Box, str::FromStr};
+use sp_std::prelude::*;
+
+use crate::{EnsureAddressNever, EnsureAddressRoot, FeeCalculator, IdentityAddressMapping};
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -48,90 +49,92 @@ parameter_types! {
 		frame_system::limits::BlockWeights::simple_max(1024);
 }
 impl frame_system::Config for Test {
-	type BaseCallFilter = ();
-	type BlockWeights = ();
-	type BlockLength = ();
-	type DbWeight = ();
-	type Origin = Origin;
-	type Index = u64;
-	type BlockNumber = u64;
-	type Hash = H256;
-	type Call = Call;
-	type Hashing = BlakeTwo256;
-	type AccountId = H160;
-	type Lookup = IdentityLookup<Self::AccountId>;
-	type Header = generic::Header<u64, BlakeTwo256>;
-	type Event = Event;
-	type BlockHashCount = BlockHashCount;
-	type Version = ();
-	type PalletInfo = PalletInfo;
-	type AccountData = pallet_balances::AccountData<u64>;
-	type OnNewAccount = ();
-	type OnKilledAccount = ();
-	type SystemWeightInfo = ();
-	type SS58Prefix = ();
-	type OnSetCode = ();
+    type BaseCallFilter = ();
+    type BlockWeights = ();
+    type BlockLength = ();
+    type Origin = Origin;
+    type Call = Call;
+    type Index = u64;
+    type BlockNumber = u64;
+    type Hash = H256;
+    type Hashing = BlakeTwo256;
+    type AccountId = H160;
+    type Lookup = IdentityLookup<Self::AccountId>;
+    type Header = generic::Header<u64, BlakeTwo256>;
+    type Event = Event;
+    type BlockHashCount = BlockHashCount;
+    type DbWeight = ();
+    type Version = ();
+    type PalletInfo = PalletInfo;
+    type AccountData = pallet_balances::AccountData<u64>;
+    type OnNewAccount = ();
+    type OnKilledAccount = ();
+    type SystemWeightInfo = ();
+    type SS58Prefix = ();
+    type OnSetCode = ();
 }
 
 parameter_types! {
 	pub const ExistentialDeposit: u64 = 0;
 }
 impl pallet_balances::Config for Test {
-	type MaxLocks = ();
-	type Balance = u64;
-	type DustRemoval = ();
-	type Event = Event;
-	type ExistentialDeposit = ExistentialDeposit;
-	type AccountStore = System;
-	type WeightInfo = ();
-	type MaxReserves = ();
-	type ReserveIdentifier = ();
+    type Balance = u64;
+    type DustRemoval = ();
+    type Event = Event;
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = System;
+    type WeightInfo = ();
+    type MaxLocks = ();
+    type MaxReserves = ();
+    type ReserveIdentifier = ();
 }
 
 parameter_types! {
 	pub const MinimumPeriod: u64 = 1000;
 }
 impl pallet_timestamp::Config for Test {
-	type Moment = u64;
-	type OnTimestampSet = ();
-	type MinimumPeriod = MinimumPeriod;
-	type WeightInfo = ();
+    type Moment = u64;
+    type OnTimestampSet = ();
+    type MinimumPeriod = MinimumPeriod;
+    type WeightInfo = ();
 }
 
 /// Fixed gas price of `0`.
 pub struct FixedGasPrice;
+
 impl FeeCalculator for FixedGasPrice {
-	fn min_gas_price() -> U256 {
-		0.into()
-	}
+    fn min_gas_price() -> U256 {
+        0.into()
+    }
 }
 
 pub struct FindAuthorTruncated;
+
 impl FindAuthor<H160> for FindAuthorTruncated {
-	fn find_author<'a, I>(_digests: I) -> Option<H160>
-	where
-		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
-	{
-		Some(H160::from_str("1234500000000000000000000000000000000000").unwrap())
-	}
+    fn find_author<'a, I>(_digests: I) -> Option<H160>
+        where
+            I: 'a + IntoIterator<Item=(ConsensusEngineId, &'a [u8])>,
+    {
+        Some(H160::from_str("1234500000000000000000000000000000000000").unwrap())
+    }
 }
 
 impl crate::Config for Test {
-	type FeeCalculator = FixedGasPrice;
-	type GasWeightMapping = ();
+    type FeeCalculator = FixedGasPrice;
+    type GasWeightMapping = ();
 
-	type CallOrigin = EnsureAddressRoot<Self::AccountId>;
-	type WithdrawOrigin = EnsureAddressNever<Self::AccountId>;
+    type BlockHashMapping = crate::SubstrateBlockHashMapping<Self>;
+    type CallOrigin = EnsureAddressRoot<Self::AccountId>;
 
-	type AddressMapping = IdentityAddressMapping;
-	type Currency = Balances;
-	type Runner = crate::runner::stack::Runner<Self>;
+    type WithdrawOrigin = EnsureAddressNever<Self::AccountId>;
+    type AddressMapping = IdentityAddressMapping;
+    type Currency = Balances;
 
-	type Event = Event;
-	type Precompiles = ();
-	type ChainId = ();
-	type BlockGasLimit = ();
-	type OnChargeTransaction = ();
-	type BlockHashMapping = crate::SubstrateBlockHashMapping<Self>;
-	type FindAuthor = FindAuthorTruncated;
+    type Event = Event;
+    type Precompiles = ();
+    type ChainId = ();
+    type BlockGasLimit = ();
+    type Runner = crate::runner::stack::Runner<Self>;
+    type OnChargeTransaction = ();
+    type FindAuthor = FindAuthorTruncated;
 }

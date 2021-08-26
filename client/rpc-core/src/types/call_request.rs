@@ -16,27 +16,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::types::Bytes;
 use ethereum_types::{H160, U256};
 use serde::Deserialize;
+
+use crate::types::Bytes;
 
 /// Call request
 #[derive(Debug, Default, PartialEq, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct CallRequest {
-	/// From
-	pub from: Option<H160>,
-	/// To
-	pub to: Option<H160>,
-	/// Gas Price
-	pub gas_price: Option<U256>,
-	/// Gas
-	pub gas: Option<U256>,
-	/// Value
-	pub value: Option<U256>,
-	/// Data
-	pub data: Option<Bytes>,
-	/// Nonce
-	pub nonce: Option<U256>,
+    /// From
+    pub from: Option<H160>,
+    /// To
+    pub to: Option<H160>,
+    /// Gas Price
+    pub gas_price: Option<U256>,
+    /// Gas
+    pub gas: Option<U256>,
+    /// Value
+    pub value: Option<U256>,
+    /// Data
+    pub data: Option<Bytes>,
+    /// Nonce
+    pub nonce: Option<U256>,
 }

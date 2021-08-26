@@ -18,9 +18,9 @@ fp-evm = { version = "3.0.0-dev", default-features = false, path = "../../../pri
 [features]
 default = ["std"]
 std = [
-	"hex",
-	"serde",
-	"serde_json",
-	"evm/std",
-	"fp-evm/std",
+    "hex",
+    "serde",
+    "serde_json",
+    "evm/std",
+    "fp-evm/std",
 ]

@@ -21,9 +21,9 @@ pallet-evm-test-vector-support = { version = "1.0.0-dev", path = "../../test-vec
 [features]
 default = ["std"]
 std = [
-	"sp-core/std",
-	"sp-io/std",
-	"fp-evm/std",
-	"evm/std",
-	"ripemd160/std",
+    "sp-core/std",
+    "sp-io/std",
+    "fp-evm/std",
+    "evm/std",
+    "ripemd160/std",
 ]

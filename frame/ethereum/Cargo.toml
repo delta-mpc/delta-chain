@@ -27,7 +27,7 @@ sha3 = { version = "0.8", default-features = false }
 libsecp256k1 = { version = "0.5", default-features = false, features = ["static-context", "hmac"] }
 fp-consensus = { version = "2.0.0-dev", path = "../../primitives/consensus", default-features = false }
 fp-rpc = { version = "3.0.0-dev", path = "../../primitives/rpc", default-features = false }
-fp-storage = { version = "2.0.0", path = "../../primitives/storage", default-features = false}
+fp-storage = { version = "2.0.0", path = "../../primitives/storage", default-features = false }
 
 [dev-dependencies]
 sp-core = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate" }
@@ -35,25 +35,25 @@ sp-core = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrat
 [features]
 default = ["std"]
 std = [
-	"serde",
-	"rustc-hex/std",
-	"codec/std",
-	"sp-runtime/std",
-	"frame-support/std",
-	"frame-system/std",
-	"pallet-balances/std",
-	"pallet-timestamp/std",
-	"pallet-evm/std",
-	"sp-io/std",
-	"sp-std/std",
-	"fp-evm/std",
-	"ethereum/std",
-	"ethereum-types/std",
-	"rlp/std",
-	"sha3/std",
-	"libsecp256k1/std",
-	"fp-consensus/std",
-	"fp-rpc/std",
-	"fp-storage/std",
-	"evm/std",
+    "serde",
+    "rustc-hex/std",
+    "codec/std",
+    "sp-runtime/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-balances/std",
+    "pallet-timestamp/std",
+    "pallet-evm/std",
+    "sp-io/std",
+    "sp-std/std",
+    "fp-evm/std",
+    "ethereum/std",
+    "ethereum-types/std",
+    "rlp/std",
+    "sha3/std",
+    "libsecp256k1/std",
+    "fp-consensus/std",
+    "fp-rpc/std",
+    "fp-storage/std",
+    "evm/std",
 ]

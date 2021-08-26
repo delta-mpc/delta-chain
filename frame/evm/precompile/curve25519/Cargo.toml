@@ -24,10 +24,10 @@ features = ["u64_backend", "alloc"]
 [features]
 default = ["std"]
 std = [
-	"sp-core/std",
-	"sp-io/std",
-	"frame-support/std",
-	"fp-evm/std",
-	"evm/std",
-	"codec/std",
+    "sp-core/std",
+    "sp-io/std",
+    "frame-support/std",
+    "fp-evm/std",
+    "evm/std",
+    "codec/std",
 ]

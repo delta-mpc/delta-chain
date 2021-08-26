@@ -18,9 +18,9 @@ ed25519-dalek = { version = "1.0.0", features = ["alloc", "u64_backend"], defaul
 [features]
 default = ["std"]
 std = [
-	"sp-core/std",
-	"sp-io/std",
-	"fp-evm/std",
-	"evm/std",
-	"ed25519-dalek/std",
+    "sp-core/std",
+    "sp-io/std",
+    "fp-evm/std",
+    "evm/std",
+    "ed25519-dalek/std",
 ]

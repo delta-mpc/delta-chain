@@ -18,12 +18,13 @@
 #![cfg(feature = "runtime-benchmarks")]
 
 //! Benchmarking
-use crate::{runner::Runner, Config, FeeCalculator, Module};
 use frame_benchmarking::{account, benchmarks};
 use rlp::RlpStream;
 use sha3::{Digest, Keccak256};
 use sp_core::{H160, U256};
 use sp_std::prelude::*;
+
+use crate::{Config, FeeCalculator, Module, runner::Runner};
 
 benchmarks! {
 
@@ -119,22 +120,24 @@ benchmarks! {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::mock::Test;
-	use frame_support::assert_ok;
-	use sp_io::TestExternalities;
+    use frame_support::assert_ok;
+    use sp_io::TestExternalities;
 
-	pub fn new_test_ext() -> TestExternalities {
-		let t = frame_system::GenesisConfig::default()
-			.build_storage::<Test>()
-			.unwrap();
-		TestExternalities::new(t)
-	}
+    use crate::mock::Test;
 
-	#[test]
-	fn test_runner_execute() {
-		new_test_ext().execute_with(|| {
-			assert_ok!(test_benchmark_runner_execute::<Test>());
-		});
-	}
+    use super::*;
+
+    pub fn new_test_ext() -> TestExternalities {
+        let t = frame_system::GenesisConfig::default()
+            .build_storage::<Test>()
+            .unwrap();
+        TestExternalities::new(t)
+    }
+
+    #[test]
+    fn test_runner_execute() {
+        new_test_ext().execute_with(|| {
+            assert_ok!(test_benchmark_runner_execute::<Test>());
+        });
+    }
 }

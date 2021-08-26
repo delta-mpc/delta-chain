@@ -78,5 +78,5 @@ default = ["aura"]
 aura = ["frontier-template-runtime/aura"]
 manual-seal = ["frontier-template-runtime/manual-seal"]
 runtime-benchmarks = [
-	"frontier-template-runtime/runtime-benchmarks",
+    "frontier-template-runtime/runtime-benchmarks",
 ]

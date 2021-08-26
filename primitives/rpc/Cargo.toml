@@ -20,13 +20,13 @@ sp-io = { version = "4.0.0-dev", default-features = false, git = "https://github
 [features]
 default = ["std"]
 std = [
-	"sp-core/std",
-	"sp-api/std",
-	"fp-evm/std",
-	"ethereum/std",
-	"ethereum-types/std",
-	"codec/std",
-	"sp-runtime/std",
-	"sp-std/std",
-	"sp-io/std",
+    "sp-core/std",
+    "sp-api/std",
+    "fp-evm/std",
+    "ethereum/std",
+    "ethereum-types/std",
+    "codec/std",
+    "sp-runtime/std",
+    "sp-std/std",
+    "sp-io/std",
 ]

@@ -18,8 +18,8 @@ tiny-keccak = { version = "2.0", features = ["fips202"] }
 [features]
 default = ["std"]
 std = [
-	"sp-core/std",
-	"sp-io/std",
-	"fp-evm/std",
-	"evm/std",
+    "sp-core/std",
+    "sp-io/std",
+    "fp-evm/std",
+    "evm/std",
 ]

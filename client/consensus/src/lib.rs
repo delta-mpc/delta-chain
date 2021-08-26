@@ -16,122 +16,124 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use std::collections::HashMap;
+use std::marker::PhantomData;
+use std::sync::Arc;
+
 use async_trait::async_trait;
-use fp_consensus::{ensure_log, FindLogError};
-use fp_rpc::EthereumRuntimeRPCApi;
 use sc_client_api;
 use sc_client_api::{backend::AuxStore, BlockOf};
 use sc_consensus::{BlockCheckParams, BlockImport, BlockImportParams, ImportResult};
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder as BlockBuilderApi;
-use sp_blockchain::{well_known_cache_keys::Id as CacheKeyId, HeaderBackend, ProvideCache};
+use sp_blockchain::{HeaderBackend, ProvideCache, well_known_cache_keys::Id as CacheKeyId};
 use sp_consensus::Error as ConsensusError;
 use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
-use std::collections::HashMap;
-use std::marker::PhantomData;
-use std::sync::Arc;
+
+use fp_consensus::{ensure_log, FindLogError};
+use fp_rpc::EthereumRuntimeRPCApi;
 
 #[derive(derive_more::Display, Debug)]
 pub enum Error {
-	#[display(fmt = "Multiple runtime Ethereum blocks, rejecting!")]
-	MultipleRuntimeLogs,
-	#[display(fmt = "Runtime Ethereum block not found, rejecting!")]
-	NoRuntimeLog,
-	#[display(fmt = "Cannot access the runtime at genesis, rejecting!")]
-	RuntimeApiCallFailed,
+    #[display(fmt = "Multiple runtime Ethereum blocks, rejecting!")]
+    MultipleRuntimeLogs,
+    #[display(fmt = "Runtime Ethereum block not found, rejecting!")]
+    NoRuntimeLog,
+    #[display(fmt = "Cannot access the runtime at genesis, rejecting!")]
+    RuntimeApiCallFailed,
 }
 
 impl From<Error> for String {
-	fn from(error: Error) -> String {
-		error.to_string()
-	}
+    fn from(error: Error) -> String {
+        error.to_string()
+    }
 }
 
 impl From<FindLogError> for Error {
-	fn from(error: FindLogError) -> Error {
-		match error {
-			FindLogError::NotFound => Error::NoRuntimeLog,
-			FindLogError::MultipleLogs => Error::MultipleRuntimeLogs,
-		}
-	}
+    fn from(error: FindLogError) -> Error {
+        match error {
+            FindLogError::NotFound => Error::NoRuntimeLog,
+            FindLogError::MultipleLogs => Error::MultipleRuntimeLogs,
+        }
+    }
 }
 
 impl From<Error> for ConsensusError {
-	fn from(error: Error) -> ConsensusError {
-		ConsensusError::ClientImport(error.to_string())
-	}
+    fn from(error: Error) -> ConsensusError {
+        ConsensusError::ClientImport(error.to_string())
+    }
 }
 
 pub struct FrontierBlockImport<B: BlockT, I, C> {
-	inner: I,
-	client: Arc<C>,
-	backend: Arc<fc_db::Backend<B>>,
-	_marker: PhantomData<B>,
+    inner: I,
+    client: Arc<C>,
+    backend: Arc<fc_db::Backend<B>>,
+    _marker: PhantomData<B>,
 }
 
 impl<Block: BlockT, I: Clone + BlockImport<Block>, C> Clone for FrontierBlockImport<Block, I, C> {
-	fn clone(&self) -> Self {
-		FrontierBlockImport {
-			inner: self.inner.clone(),
-			client: self.client.clone(),
-			backend: self.backend.clone(),
-			_marker: PhantomData,
-		}
-	}
+    fn clone(&self) -> Self {
+        FrontierBlockImport {
+            inner: self.inner.clone(),
+            client: self.client.clone(),
+            backend: self.backend.clone(),
+            _marker: PhantomData,
+        }
+    }
 }
 
 impl<B, I, C> FrontierBlockImport<B, I, C>
-where
-	B: BlockT,
-	I: BlockImport<B, Transaction = sp_api::TransactionFor<C, B>> + Send + Sync,
-	I::Error: Into<ConsensusError>,
-	C: ProvideRuntimeApi<B> + Send + Sync + HeaderBackend<B> + AuxStore + ProvideCache<B> + BlockOf,
-	C::Api: EthereumRuntimeRPCApi<B>,
-	C::Api: BlockBuilderApi<B>,
+    where
+        B: BlockT,
+        I: BlockImport<B, Transaction=sp_api::TransactionFor<C, B>> + Send + Sync,
+        I::Error: Into<ConsensusError>,
+        C: ProvideRuntimeApi<B> + Send + Sync + HeaderBackend<B> + AuxStore + ProvideCache<B> + BlockOf,
+        C::Api: EthereumRuntimeRPCApi<B>,
+        C::Api: BlockBuilderApi<B>,
 {
-	pub fn new(inner: I, client: Arc<C>, backend: Arc<fc_db::Backend<B>>) -> Self {
-		Self {
-			inner,
-			client,
-			backend,
-			_marker: PhantomData,
-		}
-	}
+    pub fn new(inner: I, client: Arc<C>, backend: Arc<fc_db::Backend<B>>) -> Self {
+        Self {
+            inner,
+            client,
+            backend,
+            _marker: PhantomData,
+        }
+    }
 }
 
 #[async_trait]
 impl<B, I, C> BlockImport<B> for FrontierBlockImport<B, I, C>
-where
-	B: BlockT,
-	I: BlockImport<B, Transaction = sp_api::TransactionFor<C, B>> + Send + Sync,
-	I::Error: Into<ConsensusError>,
-	C: ProvideRuntimeApi<B> + Send + Sync + HeaderBackend<B> + AuxStore + ProvideCache<B> + BlockOf,
-	C::Api: EthereumRuntimeRPCApi<B>,
-	C::Api: BlockBuilderApi<B>,
+    where
+        B: BlockT,
+        I: BlockImport<B, Transaction=sp_api::TransactionFor<C, B>> + Send + Sync,
+        I::Error: Into<ConsensusError>,
+        C: ProvideRuntimeApi<B> + Send + Sync + HeaderBackend<B> + AuxStore + ProvideCache<B> + BlockOf,
+        C::Api: EthereumRuntimeRPCApi<B>,
+        C::Api: BlockBuilderApi<B>,
 {
-	type Error = ConsensusError;
-	type Transaction = sp_api::TransactionFor<C, B>;
+    type Error = ConsensusError;
+    type Transaction = sp_api::TransactionFor<C, B>;
 
-	async fn check_block(
-		&mut self,
-		block: BlockCheckParams<B>,
-	) -> Result<ImportResult, Self::Error> {
-		self.inner.check_block(block).await.map_err(Into::into)
-	}
+    async fn check_block(
+        &mut self,
+        block: BlockCheckParams<B>,
+    ) -> Result<ImportResult, Self::Error> {
+        self.inner.check_block(block).await.map_err(Into::into)
+    }
 
-	async fn import_block(
-		&mut self,
-		block: BlockImportParams<B, Self::Transaction>,
-		new_cache: HashMap<CacheKeyId, Vec<u8>>,
-	) -> Result<ImportResult, Self::Error> {
-		// We validate that there are only one frontier log. No other
-		// actions are needed and mapping syncing is delegated to a separate
-		// worker.
-		ensure_log(&block.header.digest()).map_err(|e| Error::from(e))?;
+    async fn import_block(
+        &mut self,
+        block: BlockImportParams<B, Self::Transaction>,
+        new_cache: HashMap<CacheKeyId, Vec<u8>>,
+    ) -> Result<ImportResult, Self::Error> {
+        // We validate that there are only one frontier log. No other
+        // actions are needed and mapping syncing is delegated to a separate
+        // worker.
+        ensure_log(&block.header.digest()).map_err(|e| Error::from(e))?;
 
-		self.inner
-			.import_block(block, new_cache)
-			.await
-			.map_err(Into::into)
-	}
+        self.inner
+            .import_block(block, new_cache)
+            .await
+            .map_err(Into::into)
+    }
 }
