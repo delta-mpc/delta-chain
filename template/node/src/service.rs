@@ -1,31 +1,5 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
-use crate::cli::Cli;
-#[cfg(feature = "manual-seal")]
-use crate::cli::Sealing;
-use async_trait::async_trait;
-use fc_consensus::FrontierBlockImport;
-use fc_mapping_sync::{MappingSyncWorker, SyncStrategy};
-use fc_rpc::EthTask;
-use fc_rpc_core::types::{FilterPool, PendingTransactions};
-use frontier_template_runtime::{self, opaque::Block, RuntimeApi, SLOT_DURATION};
-use futures::StreamExt;
-use sc_cli::SubstrateCli;
-use sc_client_api::BlockchainEvents;
-use sc_client_api::{ExecutorProvider, RemoteBackend};
-use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
-#[cfg(feature = "manual-seal")]
-use sc_consensus_manual_seal::{self as manual_seal};
-pub use sc_executor::NativeExecutor;
-use sc_finality_grandpa::SharedVoterState;
-use sc_keystore::LocalKeystore;
-use sc_network::warp_request_handler::WarpSyncProvider;
-use sc_service::{error::Error as ServiceError, BasePath, Configuration, TaskManager};
-use sc_telemetry::{Telemetry, TelemetryWorker};
-use sp_consensus::SlotData;
-use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
-use sp_core::U256;
-use sp_inherents::{InherentData, InherentIdentifier};
 use std::{
 	cell::RefCell,
 	collections::{BTreeMap, HashMap},
@@ -33,10 +7,41 @@ use std::{
 	time::Duration,
 };
 
+use async_trait::async_trait;
+use futures::StreamExt;
+use sc_cli::{SubstrateCli, RuntimeVersion};
+use sc_client_api::{ExecutorProvider, RemoteBackend};
+use sc_client_api::BlockchainEvents;
+use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
+#[cfg(feature = "manual-seal")]
+use sc_consensus_manual_seal::{self as manual_seal};
+use sc_executor::{NativeExecutionDispatch};
+pub use sc_executor::NativeElseWasmExecutor;
+use sc_finality_grandpa::SharedVoterState;
+use sc_keystore::LocalKeystore;
+use sc_network::warp_request_handler::WarpSyncProvider;
+use sc_service::{BasePath, Configuration, error::Error as ServiceError, TaskManager};
+use sc_telemetry::{Telemetry, TelemetryWorker};
+use sp_consensus::SlotData;
+use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
+use sp_core::U256;
+use sp_inherents::{InherentData, InherentIdentifier};
+
+use fc_consensus::FrontierBlockImport;
+use fc_mapping_sync::{MappingSyncWorker, SyncStrategy};
+use fc_rpc::EthTask;
+use fc_rpc_core::types::{FilterPool, PendingTransactions};
+use frontier_template_runtime::{self, opaque::Block, RuntimeApi, SLOT_DURATION};
+
+use crate::cli::Cli;
+#[cfg(feature = "manual-seal")]
+use crate::cli::Sealing;
+use frame_benchmarking::frame_support::sp_runtime::app_crypto::sp_core::traits::{Externalities, RuntimeCode};
+
 // Our native executor instance.
 pub struct Executor;
 
-impl sc_executor::NativeExecutionDispatch for Executor {
+impl NativeExecutionDispatch for Executor {
 	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
@@ -48,7 +53,7 @@ impl sc_executor::NativeExecutionDispatch for Executor {
 	}
 }
 
-type FullClient = sc_service::TFullClient<Block, RuntimeApi, Executor>;
+type FullClient = sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<Executor>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
 
@@ -158,11 +163,14 @@ pub fn new_partial(
 		})
 		.transpose()?;
 
+	let executor = NativeElseWasmExecutor::<Executor>::new(
+		config.wasm_method,
+		config.default_heap_pages,
+		config.max_runtime_instances,
+	);
+
 	let (client, backend, keystore_container, task_manager) =
-		sc_service::new_full_parts::<Block, RuntimeApi, Executor>(
-			&config,
-			telemetry.as_ref().map(|(_, telemetry)| telemetry.handle()),
-		)?;
+		sc_service::new_full_parts::<Block, RuntimeApi, _>(&config, telemetry.as_ref().map(|(_, telemetry)| telemetry.handle()), executor)?;
 	let client = Arc::new(client);
 
 	let telemetry = telemetry.map(|(worker, telemetry)| {
@@ -651,10 +659,17 @@ pub fn new_light(mut config: Configuration) -> Result<TaskManager, ServiceError>
 		})
 		.transpose()?;
 
+	let executor = NativeElseWasmExecutor::<Executor>::new(
+		config.wasm_method,
+		config.default_heap_pages,
+		config.max_runtime_instances,
+	);
+
 	let (client, backend, keystore_container, mut task_manager, on_demand) =
-		sc_service::new_light_parts::<Block, RuntimeApi, Executor>(
+		sc_service::new_light_parts::<Block, RuntimeApi, _>(
 			&config,
 			telemetry.as_ref().map(|(_, telemetry)| telemetry.handle()),
+			executor,
 		)?;
 
 	let mut telemetry = telemetry.map(|(worker, telemetry)| {

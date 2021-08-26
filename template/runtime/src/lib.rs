@@ -30,6 +30,7 @@ use sp_version::RuntimeVersion;
 
 // A few exports that help ease life for downstream crates.
 use fp_rpc::TransactionStatus;
+use frame_system::EnsureRoot;
 pub use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{FindAuthor, KeyOwnerProofSystem, Randomness},
@@ -318,7 +319,7 @@ impl pallet_ethereum::Config for Runtime {
 	type StateRoot = pallet_ethereum::IntermediateStateRoot;
 }
 
-frame_support::parameter_types! {
+parameter_types! {
 	pub BoundDivision: U256 = U256::from(1024);
 }
 
@@ -327,6 +328,22 @@ impl pallet_dynamic_fee::Config for Runtime {
 }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
+
+parameter_types! {
+    pub const MaxWellKnownNodes: u32 = 8;
+    pub const MaxPeerIdLength: u32 = 128;
+}
+
+impl pallet_node_authorization::Config for Runtime {
+	type Event = Event;
+	type MaxWellKnownNodes = MaxWellKnownNodes;
+	type MaxPeerIdLength = MaxPeerIdLength;
+	type AddOrigin = EnsureRoot<AccountId>;
+	type RemoveOrigin = EnsureRoot<AccountId>;
+	type SwapOrigin = EnsureRoot<AccountId>;
+	type ResetOrigin = EnsureRoot<AccountId>;
+	type WeightInfo = ();
+}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -346,6 +363,7 @@ construct_runtime!(
 		Ethereum: pallet_ethereum::{Pallet, Call, Storage, Event, Config, ValidateUnsigned},
 		EVM: pallet_evm::{Pallet, Config, Call, Storage, Event<T>},
 		DynamicFee: pallet_dynamic_fee::{Pallet, Call, Storage, Config, Inherent},
+		NodeAuthorization: pallet_node_authorization::{Pallet, Call, Storage, Event<T>, Config<T>},
 	}
 );
 

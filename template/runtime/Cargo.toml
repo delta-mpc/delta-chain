@@ -34,6 +34,7 @@ pallet-sudo = { default-features = false, git = "https://github.com/paritytech/s
 pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate" }
 pallet-transaction-payment = { default-features = false, git = "https://github.com/paritytech/substrate" }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = "https://github.com/paritytech/substrate" }
+pallet-node-authorization = { default-features = false, git = "https://github.com/paritytech/substrate" }
 
 sp-api = { default-features = false, git = "https://github.com/paritytech/substrate" }
 sp-block-builder = { default-features = false, git = "https://github.com/paritytech/substrate"}
@@ -84,6 +85,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
+	'pallet-node-authorization/std',
 
 	"sp-api/std",
 	"sp-block-builder/std",
