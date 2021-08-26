@@ -21,4 +21,5 @@ members = [
     "primitives/rpc",
     "template/node",
     "template/runtime",
+    'pallets/*',
 ]

@@ -35,6 +35,7 @@ pallet-timestamp = { default-features = false, git = "https://github.com/parityt
 pallet-transaction-payment = { default-features = false, git = "https://github.com/paritytech/substrate" }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = "https://github.com/paritytech/substrate" }
 pallet-node-authorization = { default-features = false, git = "https://github.com/paritytech/substrate" }
+pallet-session = { default-features = false, package = 'pallet-session', git = "https://github.com/paritytech/substrate" }
 
 sp-api = { default-features = false, git = "https://github.com/paritytech/substrate" }
 sp-block-builder = { default-features = false, git = "https://github.com/paritytech/substrate" }
@@ -54,6 +55,8 @@ fp-rpc = { default-features = false, path = "../../primitives/rpc" }
 # benchmarking dependencies
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true }
 frame-system-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true }
+
+validatorset = { default-features = false, package = 'validator-set', path = '../../pallets/validator-set' }
 
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate" }
@@ -98,6 +101,8 @@ std = [
     "sp-version/std",
     "frame-benchmarking/std",
     "frame-system-benchmarking/std",
+    'validatorset/std',
+    'pallet-session/std',
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

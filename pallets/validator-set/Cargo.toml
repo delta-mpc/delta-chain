@@ -1,0 +1,38 @@
+[package]
+name = "validator-set"
+version = "0.1.0"
+edition = "2018"
+
+[dev-dependencies.serde]
+features = ['derive']
+version = '1.0.126'
+
+[dependencies]
+codec = { default-features = false, features = ['derive'], package = 'parity-scale-codec', version = '2.0.0' }
+
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate" }
+frame-system = { default-features = false, package = "frame-system", git = "https://github.com/paritytech/substrate" }
+frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true }
+
+sp-core = { default-features = false, git = 'https://github.com/paritytech/substrate.git' }
+sp-io = { default-features = false, git = "https://github.com/paritytech/substrate" }
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate" }
+sp-std = { default-features = false, git = "https://github.com/paritytech/substrate" }
+
+pallet-session = { default-features = false, git = "https://github.com/paritytech/substrate" }
+
+[features]
+default = ['std']
+runtime-benchmarks = ['frame-benchmarking']
+std = [
+    'codec/std',
+    'frame-benchmarking/std',
+    'frame-support/std',
+    'frame-system/std',
+    'sp-core/std',
+    'sp-io/std',
+    'sp-std/std',
+    'sp-runtime/std',
+    'pallet-session/std'
+]
+try-runtime = ['frame-support/try-runtime']

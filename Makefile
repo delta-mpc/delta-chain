@@ -10,8 +10,7 @@ bob:
 	--node-key 6ce3be907dbcabf20a9a5a60a712b4256a54196000a8ed4050d352bc113f8c58 \
 	--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWBmAwcd4PJNJvfV89HwE48nwkRmAgo8Vy3uQEyNNHBox2
 charlie:
-	./target/release/frontier-template-node --no-mdns --chain local -d ./.local/charlie \
-	--offchain-worker always --name charlie \
+	./target/release/frontier-template-node --no-mdns --validator --chain local --charlie -d ./.local/charlie \
 	--port 30335 --ws-port 9946 --rpc-port 9935 \
 	--node-key 3a9d5b35b9fb4c42aafadeca046f6bf56107bd2579687f069b42646684b94d9e  \
 	--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWBmAwcd4PJNJvfV89HwE48nwkRmAgo8Vy3uQEyNNHBox2
