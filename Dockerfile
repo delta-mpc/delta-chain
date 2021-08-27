@@ -3,9 +3,13 @@ WORKDIR /delta
 COPY . .
 RUN cargo build --release
 
-FROM paritytech/ci-linux:production
+FROM phusion/baseimage:master-amd64
 WORKDIR /delta
 COPY --from=builder /delta/target/release/delta-chain-node ./node
+
+# Shrinking
+RUN rm -rf /usr/lib/python* && \
+    rm -rf /usr/bin /usr/sbin /usr/share/man
 
 # 30333 for p2p traffic
 # 9933 for RPC call

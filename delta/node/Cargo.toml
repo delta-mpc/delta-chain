@@ -2,7 +2,7 @@
 authors = ['Yinwen Technologies']
 name = "delta-chain-node"
 version = "0.0.0"
-description = "A Substrate-based,Ethernet-compatible blockchain node for Delta"
+description = "A Substrate-based, EVM-compatible blockchain node for Delta"
 edition = "2018"
 license = "Unlicense"
 build = "build.rs"

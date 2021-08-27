@@ -4,7 +4,7 @@ services:
   alice:
     build: .
     container_name: delta-chain-alice
-    image: registry.cn-shanghai.aliyuncs.com/yuanben/delta-chain:0.0.1
+    image: deltampc/delta-chain:0.0.1
     command:
       - --validator
       - --unsafe-ws-external
@@ -14,7 +14,7 @@ services:
       - --name
       - Alice
       - --node-key
-      - 2d2c7a1c5b92fc77aef5524851fc301d91a0a958bb68a9a5fe617e5a8e9f66d6
+      - $AliceNodeKey
     ports:
       - "9944:9944"
       - "9933:9933"
@@ -24,7 +24,7 @@ services:
         target: /root/.local
   bob:
     container_name: delta-chain-bob
-    image: registry.cn-shanghai.aliyuncs.com/yuanben/delta-chain:0.0.1
+    image: deltampc/delta-chain:0.0.1
     command:
       - --validator
       - --unsafe-ws-external
@@ -40,7 +40,7 @@ services:
       - --rpc-port
       - "9934"
       - --node-key
-      - 41a86336376cde451ae861f4d89e42b8e9fec9d2174a1860451f7300d02b284d
+      - $BobNodeKey
       - --bootnodes
       - /dns/alice/tcp/30333/p2p/12D3KooWKpxeRfkRPmCQUb9PCBVPgdo139n3g8SNAKE3Ap4V6bWy
     ports:
