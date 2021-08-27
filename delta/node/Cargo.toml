@@ -1,13 +1,13 @@
 [package]
-name = "frontier-template-node"
+authors = ['Yinwen Technologies']
+name = "delta-chain-node"
 version = "0.0.0"
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
-description = "A fresh FRAME-based Substrate node, ready for hacking."
+description = "A Substrate-based,Ethernet-compatible blockchain node for Delta"
 edition = "2018"
 license = "Unlicense"
 build = "build.rs"
-homepage = "https://substrate.dev"
-repository = "https://github.com/substrate-developer-hub/frontier-node-template/"
+homepage = 'https://deltampc.com'
+repository = 'https://github.com/delta-mpc/delta-chain'
 publish = false
 
 [package.metadata.docs.rs]
@@ -59,7 +59,7 @@ frame-benchmarking-cli = { git = "https://github.com/paritytech/substrate" }
 
 fc-consensus = { path = "../../client/consensus" }
 fp-consensus = { path = "../../primitives/consensus" }
-frontier-template-runtime = { path = "../runtime", default-features = false, features = ["std"] }
+delta-runtime = { path = "../runtime", default-features = false, features = ["std"] }
 fc-rpc = { path = "../../client/rpc" }
 fp-rpc = { path = "../../primitives/rpc" }
 fc-rpc-core = { path = "../../client/rpc-core" }
@@ -75,8 +75,8 @@ substrate-build-script-utils = { git = "https://github.com/paritytech/substrate"
 
 [features]
 default = ["aura"]
-aura = ["frontier-template-runtime/aura"]
-manual-seal = ["frontier-template-runtime/manual-seal"]
+aura = ["delta-runtime/aura"]
+manual-seal = ["delta-runtime/manual-seal"]
 runtime-benchmarks = [
-    "frontier-template-runtime/runtime-benchmarks",
+    "delta-runtime/runtime-benchmarks",
 ]

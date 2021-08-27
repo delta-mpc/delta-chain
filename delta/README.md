@@ -31,14 +31,14 @@ $ cargo build --release
 To execute the chain, run:
 
 ```
-$ ./target/debug/frontier-template-node --dev
+$ ./target/debug/delta-chain-node --dev
 ```
 
 The node also supports to use manual seal (to produce block manually through RPC).  
 This is also used by the ts-tests:
 
 ```
-$ ./target/debug/frontier-template-node --dev --manual-seal
+$ ./target/debug/delta-chain-node --dev --manual-seal
 ```
 
 ### Docker Based Development

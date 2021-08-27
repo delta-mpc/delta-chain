@@ -18,7 +18,7 @@
 use sc_cli::{ChainSpec, Role, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 
-use frontier_template_runtime::Block;
+use delta_runtime::Block;
 
 use crate::{
     chain_spec,
@@ -53,6 +53,7 @@ impl SubstrateCli for Cli {
 
     fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
         Ok(match id {
+            "delta" => Box::new(chain_spec::delta_config()?),
             "dev" => Box::new(chain_spec::development_config()?),
             "" | "local" => Box::new(chain_spec::local_testnet_config()?),
             path => Box::new(chain_spec::ChainSpec::from_json_file(
@@ -62,7 +63,7 @@ impl SubstrateCli for Cli {
     }
 
     fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-        &frontier_template_runtime::VERSION
+        &delta_runtime::VERSION
     }
 }
 

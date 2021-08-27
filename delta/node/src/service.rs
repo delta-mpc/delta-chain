@@ -32,7 +32,7 @@ use fc_consensus::FrontierBlockImport;
 use fc_mapping_sync::{MappingSyncWorker, SyncStrategy};
 use fc_rpc::EthTask;
 use fc_rpc_core::types::{FilterPool, PendingTransactions};
-use frontier_template_runtime::{self, opaque::Block, RuntimeApi, SLOT_DURATION};
+use delta_runtime::{self, opaque::Block, RuntimeApi, SLOT_DURATION};
 
 use crate::cli::Cli;
 #[cfg(feature = "manual-seal")]
@@ -45,11 +45,11 @@ impl NativeExecutionDispatch for Executor {
     type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
     fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-        frontier_template_runtime::api::dispatch(method, data)
+        delta_runtime::api::dispatch(method, data)
     }
 
     fn native_version() -> sc_executor::NativeVersion {
-        frontier_template_runtime::native_version()
+        delta_runtime::native_version()
     }
 }
 

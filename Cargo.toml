@@ -19,7 +19,7 @@ members = [
     "primitives/consensus",
     "primitives/evm",
     "primitives/rpc",
-    "template/node",
-    "template/runtime",
+    "delta/node",
+    "delta/runtime",
     'pallets/*',
 ]

@@ -20,7 +20,7 @@ use sp_runtime::traits::BlakeTwo256;
 
 use fc_rpc::{OverrideHandle, RuntimeApiStorageOverride, SchemaV1Override, StorageOverride};
 use fc_rpc_core::types::{FilterPool, PendingTransactions};
-use frontier_template_runtime::{AccountId, Balance, Hash, Index, opaque::Block};
+use delta_runtime::{AccountId, Balance, Hash, Index, opaque::Block};
 use pallet_ethereum::EthereumStorageSchema;
 
 /// Light client extra dependencies.
@@ -131,7 +131,7 @@ pub fn create_full<C, P, BE>(
     io.extend_with(EthApiServer::to_delegate(EthApi::new(
         client.clone(),
         pool.clone(),
-        frontier_template_runtime::TransactionConverter,
+        delta_runtime::TransactionConverter,
         network.clone(),
         pending_transactions.clone(),
         signers,

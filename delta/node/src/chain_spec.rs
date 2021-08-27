@@ -6,9 +6,10 @@ use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{H160, Pair, Public, sr25519, U256};
 use sp_core::OpaquePeerId;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
+use sp_runtime::app_crypto::Ss58Codec;
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
-use frontier_template_runtime::{
+use delta_runtime::{
     AccountId, AuraConfig, BalancesConfig, EthereumConfig, EVMConfig, GenesisConfig, GrandpaConfig,
     NodeAuthorizationConfig, opaque::SessionKeys, SessionConfig, Signature, SudoConfig,
     SystemConfig, ValidatorSetConfig, WASM_BINARY,
@@ -142,6 +143,47 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
     ))
 }
 
+pub fn delta_config() -> Result<ChainSpec, String> {
+    let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
+
+    Ok(ChainSpec::from_genesis(
+        // Name
+        "DeltaChain",
+        // ID
+        "delta_chain",
+        ChainType::Live,
+        move || {
+            testnet_genesis(
+                wasm_binary,
+                // Initial PoA authorities
+                vec![(
+                    AuraId::from_ss58check("5Gjy51XjttHf5mA7M1zqoKCQiiGjxmw3nGztaJyCRid4ePDE").unwrap(),
+                    GrandpaId::from_ss58check("5EEEv4XpWKkhtC57dJbsqCaNkx8R7DfMEi2Ue8krrLfv58SG").unwrap(),
+                    AccountId::from_ss58check("5Gjy51XjttHf5mA7M1zqoKCQiiGjxmw3nGztaJyCRid4ePDE").unwrap(),
+                )],
+                // Sudo account
+                AccountId::from_ss58check("5Gjy51XjttHf5mA7M1zqoKCQiiGjxmw3nGztaJyCRid4ePDE").unwrap(),
+                // Pre-funded accounts
+                vec![
+                    AccountId::from_ss58check("5Gjy51XjttHf5mA7M1zqoKCQiiGjxmw3nGztaJyCRid4ePDE").unwrap(),
+                    AccountId::from_ss58check("5HbNR8NG9GcoaWtTDi9dKv6zuYKHBVXpwaZba3n1qWJSMt9W").unwrap(),
+                ],
+                true,
+            )
+        },
+        // Bootnodes
+        vec![],
+        // Telemetry
+        None,
+        // Protocol ID
+        None,
+        // Properties
+        None,
+        // Extensions
+        None,
+    ))
+}
+
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
     wasm_binary: &[u8],
@@ -186,24 +228,10 @@ fn testnet_genesis(
             accounts: {
                 let mut map = BTreeMap::new();
                 map.insert(
-                    // H160 address of Alice dev account
+                    // H160 address of dev account
                     // Derived from SS58 (42 prefix) address
-                    // SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-                    // hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
                     // Using the full hex key, truncating to the first 20 bytes (the first 40 hex chars)
-                    H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
-                        .expect("internal H160 is valid; qed"),
-                    pallet_evm::GenesisAccount {
-                        balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
-                            .expect("internal U256 is valid; qed"),
-                        code: Default::default(),
-                        nonce: Default::default(),
-                        storage: Default::default(),
-                    },
-                );
-                map.insert(
-                    // H160 address of CI test runner account
-                    H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
+                    H160::from_str("cee2b721fc2fcbb3c136effec5d555c9f9c97db1")
                         .expect("internal H160 is valid; qed"),
                     pallet_evm::GenesisAccount {
                         balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
@@ -221,12 +249,12 @@ fn testnet_genesis(
         node_authorization: NodeAuthorizationConfig {
             nodes: vec![
                 (
-                    OpaquePeerId(bs58::decode("12D3KooWBmAwcd4PJNJvfV89HwE48nwkRmAgo8Vy3uQEyNNHBox2").into_vec().unwrap()),
+                    OpaquePeerId(bs58::decode("12D3KooWKpxeRfkRPmCQUb9PCBVPgdo139n3g8SNAKE3Ap4V6bWy").into_vec().unwrap()),
                     endowed_accounts[0].clone()
                 ),
                 (
-                    OpaquePeerId(bs58::decode("12D3KooWQYV9dGMFoRzNStwpXztXaBUjtPqi6aU76ZgUriHhKust").into_vec().unwrap()),
-                    endowed_accounts[1].clone()
+                    OpaquePeerId(bs58::decode("12D3KooWAQvUgm4nJ1uSgG9dZCYe1J5tsnoYaHa21VJr1HCo56s9").into_vec().unwrap()),
+                    endowed_accounts[0].clone()
                 ),
             ],
         },

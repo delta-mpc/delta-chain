@@ -1,5 +1,5 @@
 [package]
-name = "frontier-template-runtime"
+name = "delta-runtime"
 version = "0.0.0"
 authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
 edition = "2018"
