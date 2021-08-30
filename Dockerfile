@@ -8,8 +8,7 @@ WORKDIR /delta
 COPY --from=builder /delta/target/release/delta-chain-node ./node
 
 # Shrinking
-RUN rm -rf /usr/lib/python* && \
-    rm -rf /usr/bin /usr/sbin /usr/share/man
+RUN rm -rf /usr/lib/python*
 
 # 30333 for p2p traffic
 # 9933 for RPC call
