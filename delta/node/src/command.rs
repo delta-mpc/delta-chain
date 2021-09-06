@@ -28,7 +28,7 @@ use crate::{
 
 impl SubstrateCli for Cli {
     fn impl_name() -> String {
-        "Frontier Node".into()
+        "Delta Node".into()
     }
 
     fn impl_version() -> String {
